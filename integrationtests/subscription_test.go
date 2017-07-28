@@ -1,4 +1,4 @@
-package tests
+package integrationtests
 
 import (
 	"bytes"
@@ -12,17 +12,18 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/serverless/event-gateway/functions"
+	"github.com/serverless/event-gateway/integrationtests/stub"
 	"github.com/serverless/event-gateway/pubsub"
 )
 
-func TestFunctionPubSub(t *testing.T) {
+func TestSubscription(t *testing.T) {
 	logCfg := zap.NewDevelopmentConfig()
 	logCfg.DisableStacktrace = true
 	log, _ := logCfg.Build()
 
-	kv, shutdownGuard := TestingEtcd()
+	kv, shutdownGuard := stub.TestEtcd()
 
-	testAPIServer := newTestAPIServer(kv, log)
+	testAPIServer := stub.ConfigAPIServer(kv, log)
 	defer testAPIServer.Close()
 
 	router, testRouterServer := newTestRouterServer(kv, log)
@@ -67,12 +68,12 @@ func TestFunctionPubSub(t *testing.T) {
 		Event:      pubsub.TopicID(eventName),
 	})
 
-	wait5Seconds(router.WaitForSubscriber(pubsub.TopicID(eventName)),
+	wait10Seconds(router.WaitForSubscriber(pubsub.TopicID(eventName)),
 		"timed out waiting for subscriber to be configured!")
 
 	emit(testRouterServer.URL, eventName, []byte(expected))
 
-	wait5Seconds(smileyReceived,
+	wait10Seconds(smileyReceived,
 		"timed out waiting to receive pub/sub event in subscriber!")
 
 	router.Drain()
@@ -93,10 +94,10 @@ func emit(url, topic string, body []byte) {
 	defer resp.Body.Close()
 }
 
-func wait5Seconds(ch <-chan struct{}, errMsg string) {
+func wait10Seconds(ch <-chan struct{}, errMsg string) {
 	select {
 	case <-ch:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		panic(errMsg)
 	}
 }

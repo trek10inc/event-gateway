@@ -1,6 +1,10 @@
 # The Event Gateway
 
+[![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![Build Status](https://travis-ci.com/serverless/event-gateway.svg?token=jjfmiKqqzKMQrFyUDpMP&branch=master)](https://travis-ci.com/serverless/event-gateway)
+
+[Website](https://serverless.com) • [Docs](./_docs/) • [Newsletter](http://eepurl.com/b8dv4P) • [Slack](https://serverless-contrib.slack.com)
+
 
 The Event Gateway combines both API Gateway and Pub/Sub functionality into a single event-driven experience, intended for use with Functions-as-a-Service on AWS, Azure, Google & IBM. It's dataflow for event-driven, serverless architectures. It routes Events (data) to Functions (serverless compute). The Event Gateway is a layer-7 proxy and realtime dataflow engine.
 
@@ -282,14 +286,37 @@ Request:
 - `functionId` - `string` - required, function name
 - `provider` - `object` - required, provider specific information about a function, depends on type:
   - for AWS Lambda:
-    - `type` - `string` - provider type: `awslambda`
-    - `arn` - `string` - AWS ARN identifier
-    - `region` - `string` - region name
-    - `awsAccessKeyID` - `string` - AWS API key ID
-    - `awsSecretAccessKey` - `string` - AWS API key
+    - `type` - `string` - required, provider type: `awslambda`
+    - `arn` - `string` - required, AWS ARN identifier
+    - `region` - `string` - required, region name
+    - `awsAccessKeyID` - `string` - optional, AWS API key ID
+    - `awsSecretAccessKey` - `string` - optional, AWS API key
   - for HTTP function:
-    - `type` - `string` - provider type: `http`
-    - `url` - `string` - the URL of an http or https remote endpoint  
+    - `type` - `string` - required, provider type: `http`
+    - `url` - `string` - required, the URL of an http or https remote endpoint
+
+Response:
+
+- `functionId` - `string` - function name
+- `provider` - `object` - provider specific information about a function
+
+#### Update function
+
+`POST /v1/functions/<function id>`
+
+Request:
+
+- `functionId` - `string` - required, function name
+- `provider` - `object` - required, provider specific information about a function, depends on type:
+  - for AWS Lambda:
+    - `type` - `string` - required, provider type: `awslambda`
+    - `arn` - `string` - required, AWS ARN identifier
+    - `region` - `string` - required, region name
+    - `awsAccessKeyID` - `string` - optional, AWS API key ID
+    - `awsSecretAccessKey` - `string` - optional, AWS API key
+  - for HTTP function:
+    - `type` - `string` - required, provider type: `http`
+    - `url` - `string` - required, the URL of an http or https remote endpoint
 
 Response:
 
@@ -467,3 +494,12 @@ OpenWhisk, as mentioned above, is a FaaS platform. Triggers & Rules enable build
 - OpenWhisk Rules don't integrate with other FaaS providers
 - OpenWhisk doesn't provide a fine-grained access control system
 - OpenWhisk doesn't enable exporting events outside OpenWhisk
+
+## Community
+
+* [Website](https://serverless.com)
+* [Blog](https://serverless.com/blog)
+* [Example use-cases](./_docs/use-cases.md)
+* [Email Updates](http://eepurl.com/b8dv4P)
+* [Slack](https://serverless-contrib.slack.com)
+* [Contact Us](mailto:hello@serverless.com)
